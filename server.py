@@ -32,7 +32,10 @@ def show_afterparty_form():
 
 @app.route('/afterparty/search')
 def find_afterparties():
+
     """Search for afterparties on Eventbrite"""
+ 
+    
 
     keyword = request.args.get('keyword', '')
     postalcode = request.args.get('zipcode', '')
@@ -40,8 +43,18 @@ def find_afterparties():
     unit = request.args.get('unit', '')
     sort = request.args.get('sort', '')
 
+ 
+
     url = 'https://app.ticketmaster.com/discovery/v2/events'
     payload = {'apikey': API_KEY}
+
+    payload['keyword'] = keyword
+    payload['postalCode'] = postalcode
+    payload['radius'] = radius
+    payload['unit'] = unit
+    payload['sort'] = sort
+
+    res = requests.get(url, params=payload)
 
     # TODO: Make a request to the Event Search endpoint to search for events
     #
@@ -54,9 +67,8 @@ def find_afterparties():
     # - Replace the empty list in `events` with the list of events from your
     #   search results
 
-    data = {'Test': ['This is just some test data'],
-            'page': {'totalElements': 1}}
-    events = []
+    data = res.json()
+    events = [data]
 
     return render_template('search-results.html',
                            pformat=pformat,
